@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -259,6 +260,62 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void testAmountOfNotEmptySearch()
+    {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        String search_line = "Linkin Park Diskography";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                search_line,
+                "cannot find search input",
+                5);
+        String search_result_locator =
+                "//*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']";
+        waitForElementPresent(
+          By.xpath(search_result_locator),
+          "Cannot find anything by the request" + search_line,
+                25);
+
+        int amount_of_search_result = getAmountOfElements(
+                By.xpath(search_result_locator)
+        );
+
+        Assert.assertTrue(
+                "We found too few results!",
+                amount_of_search_result > 0
+        );
+    }
+
+    @Test
+    public void testAmountOfEmptySearch()
+    {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        String search_line = "zxcvasdfgwer";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                search_line,
+                "cannot find search input",
+                5);
+        String search_result_locator =
+                "//*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']";
+        String empty_result_label = "//*[@text='No results found']";
+        waitForElementPresent(
+          By.xpath(empty_result_label),
+                "Cannot find empty result label by the request " + search_line,
+                15);
+
+        assertElementNotPresent(
+                By.xpath(search_result_locator),
+                "We've found some results by request " + search_line
+        );
+
+
+    }
 
     private WebElement waitForElementPresent(By by, String error_message, long timeOutInSeconds)
     {
@@ -354,6 +411,20 @@ public class FirstTest {
                 .release()
                 .perform();
 
+    }
+    private int getAmountOfElements(By by)
+    {
+        List elements = driver.findElements(by);
+        return elements.size();
+    }
+
+    private  void assertElementNotPresent(By by, String error_message)
+    {
+        int amount_of_elements = getAmountOfElements(by);
+        if (amount_of_elements > 0) {
+            String default_message = "An element '" + by.toString() + "' supported to be not present";
+            throw  new AssertionError(default_message + " " + error_message);
+        }
     }
 
 }
