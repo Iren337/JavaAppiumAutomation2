@@ -33,6 +33,7 @@ public class FirstTest {
         capabilities.setCapability("app","/Users/ajmakmd093/Desktop/JavaAppiumAutomation2/apks/org.wikipedia.apk.apk");
 
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
+        driver.rotate(ScreenOrientation.PORTRAIT);
     }
     @After
     public void tearDown()
@@ -366,6 +367,32 @@ public class FirstTest {
                 title_after_second_rotation);
 
     }
+
+    @Test
+    public void testCheckSearchArticleInBackground()
+    {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "cannot find search input",
+                5);
+
+        waitForElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "Cannot find Search Wikipedia input", 5);
+
+        driver.runAppInBackground(2);
+
+        waitForElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "Cannot find article after reterning from background",
+                5);
+
+    }
+
 
     private WebElement waitForElementPresent(By by, String error_message, long timeOutInSeconds)
     {
