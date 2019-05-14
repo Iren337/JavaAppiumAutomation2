@@ -88,6 +88,17 @@ public class FirstTest {
         waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Cannot find Search Wikipedia input", 5);
 
+        WebElement text_element = waitForElementPresent(
+                By.id("org.wikipedia:id/search_src_text"),
+                "cannot find element with text 'Search…'",
+                15
+        );
+
+        String current_text_element = text_element.getAttribute("text");
+        Assert.assertEquals("Cannot find text 'Search…' or text is not correct",
+                "Search…",
+                current_text_element);
+
         waitForElementAndSendKeys(
                 By.xpath("//*[contains(@text, 'Search…')]"),
                 "Java",
