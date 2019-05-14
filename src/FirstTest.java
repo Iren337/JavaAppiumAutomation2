@@ -472,6 +472,31 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void testAssertElementPresent()
+    {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "cannot find search input",
+                5);
+
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "Cannot find Search Wikipedia input", 5);
+
+        String title_after = assertElementPresent(By.id("org.wikipedia:id/view_page_title_text"), "text");
+
+        Assert.assertEquals(
+                "Title is not found",
+                "Java (programming language)",
+                title_after);
+
+    }
+
+
     private WebElement waitForElementPresent(By by, String error_message, long timeOutInSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds);
@@ -668,7 +693,10 @@ public class FirstTest {
                 "Cannot find folder with name " + name_of_folder,
                 15
         );
-
-
+    }
+    private String assertElementPresent(By by, String atribute)
+    {
+        WebElement element = driver.findElement(by);
+        return element.getAttribute(atribute);
     }
 }
