@@ -105,13 +105,6 @@ public class FirstTest {
                 "cannot find search input",
                 5);
 
-        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find element", 15);
-
-        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Wikimedia list article']"),
-                "Cannot find element", 15);
-
-
         waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
                 "Cannot find Search Wikipedia input", 5);
 
@@ -126,6 +119,40 @@ public class FirstTest {
                 "Java (programming language)",
                 article_title);
     }
+
+    @Test
+    public void testCheckSearchResult()
+    {
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "cannot find search input",
+                5);
+
+
+        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "Cannot find element", 15);
+
+        waitForElementPresent(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Wikimedia list article']"),
+                "Cannot find element", 15);
+
+        waitForElementAndClick(By.id("org.wikipedia:id/search_close_btn"),
+                "Cannot find 'X' to cancel search",
+                5);
+
+        waitForElementNotPresent(
+                By.id("org.wikipedia:id/page_list_item_container"),
+                "search rezult are still here",
+                15
+        );
+
+
+    }
+
 
 
     private WebElement waitForElementPresent(By by, String error_message, long timeOutInSeconds)
