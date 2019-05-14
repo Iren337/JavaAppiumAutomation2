@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class FirstTest {
 
@@ -393,6 +394,83 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void saveTwoArticleToMyList() throws InterruptedException {
+        String name_of_folder = "Learning programming";
+        String article2_description = "Object-oriented programming language";
+        String article1_description = "Wikimedia list article";
+
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "cannot find search input",
+                5);
+
+        addArticleToTheFolderNoFoldersBefore(article1_description, name_of_folder);
+
+
+        waitForElementAndClick(By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"),
+                "Cannot close article, cannot find X link",
+                5);
+
+        waitForElementAndClick(By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "cannot find search input",
+                5);
+
+        addArticleToTheFolder(article2_description, name_of_folder);
+
+
+        waitForElementAndClick(By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"),
+                "Cannot close article, cannot find X link",
+                5);
+
+        waitForElementAndClick(By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"),
+                "Cannot find navigation button to My List",
+                5);
+
+        waitForElementAndClick(By.xpath("//*[@text='" + name_of_folder +"']"),
+                "Cannot find navigation button to My List",
+                5);
+
+        swipeElementToLeft(
+                By.xpath("//android.widget.TextView[@text='Java version history']"),
+                //By.xpath("//*[@text='Java (programming language)']"),
+                "Cannot find saved article");
+
+        waitForElementNotPresent(By.xpath("//*[@text='Java version history']"),
+                "Cannot delete saved article",
+                10);
+
+        String title_before = waitForElementAndGetAttribute(
+                By.id("org.wikipedia:id/page_list_item_title"),
+                "text",
+                "Cannotfind title of article",
+                15);
+
+        waitForElementAndClick(By.xpath("//*[@text='Java (programming language)']"),
+                "Cannot find saved article, after removing other article",
+                10);
+
+        String title_after = waitForElementAndGetAttribute(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "text",
+                "Cannotfind title of article",
+                15);
+
+        Assert.assertEquals(
+                "Article title have been changed after screen rotation",
+                title_before,
+                title_after);
+
+    }
 
     private WebElement waitForElementPresent(By by, String error_message, long timeOutInSeconds)
     {
@@ -414,6 +492,15 @@ public class FirstTest {
         element.click();
         return element;
     }
+
+    private WebElement waitForElementAndClickWithDelay(By by, String error_message, long timeoutInSeconds, long delay) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(delay);
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
+        Thread.sleep(delay);
+        element.click();
+        return element;
+    }
+
     private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSeconds)
     {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
@@ -480,7 +567,7 @@ public class FirstTest {
         int right_x = left_x + element.getSize().getWidth();
         int upper_y = element.getLocation().getY();
         int lower_y = upper_y + element.getSize().getWidth();
-        int middle_y = (upper_y + lower_y) / 2;
+        int middle_y = (upper_y + lower_y)/2;
 
         TouchAction action = new TouchAction(driver);
         action.press(right_x, middle_y)
@@ -489,6 +576,7 @@ public class FirstTest {
                 .perform();
 
     }
+
     private int getAmountOfElements(By by)
     {
         List elements = driver.findElements(by);
@@ -510,4 +598,77 @@ public class FirstTest {
         return element.getAttribute(atribute);
     }
 
+    private void addArticleToTheFolderNoFoldersBefore(String article_title_description, String name_of_folder) throws InterruptedException {
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + article_title_description + "']"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementPresent(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "cannot find article title",
+                15
+        );
+
+        waitForElementAndClick(By.xpath("//android.widget.ImageView[@content-desc='More options']"),
+                "Cannot find button to open article options",
+                15);
+
+        waitForElementAndClickWithDelay(
+                By.xpath("//*[@text='Add to reading list']"),
+                "Cannot find option to add article to reading list",
+                8,
+                3
+                );
+
+
+        waitForElementAndClick(
+                By.id("org.wikipedia:id/onboarding_button"),
+                "Cannot find 'Got it' tip overlay",
+                5);
+
+        waitForElementAndClear(
+                By.id("org.wikipedia:id/text_input"),
+                "Cannot find input to set name of articles folder",
+                5);
+
+        waitForElementAndSendKeys(
+                By.id("org.wikipedia:id/text_input"),
+                name_of_folder,
+                "Cannot put text into articles folder input",
+                5);
+
+        waitForElementAndClick(
+                By.xpath("//*[@text='OK']"),
+                "Cannot press OK button",
+                5);
+
+    }
+    private void addArticleToTheFolder(String article_title_description, String name_of_folder) throws InterruptedException {
+        waitForElementAndClick(By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + article_title_description + "']"),
+                "Cannot find Search Wikipedia input", 5);
+
+        waitForElementPresent(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "cannot find article title",
+                15
+        );
+
+        waitForElementAndClick(By.xpath("//android.widget.ImageView[@content-desc='More options']"),
+                "Cannot find button to open article options",
+                15);
+
+        waitForElementAndClickWithDelay(
+                By.xpath("//*[@text='Add to reading list']"),
+                "Cannot find option to add article to reading list",
+                8,
+                15
+        );
+
+        waitForElementAndClick(
+                By.xpath("//android.widget.TextView[@text='" + name_of_folder +"']"),
+                "Cannot find folder with name " + name_of_folder,
+                15
+        );
+
+
+    }
 }
