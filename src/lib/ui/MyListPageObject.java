@@ -4,6 +4,8 @@ import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import sun.dc.pr.PRError;
 
+import java.util.concurrent.TimeUnit;
+
 public class MyListPageObject extends MainPageObject{
 
     private  static final  String
@@ -26,8 +28,8 @@ public class MyListPageObject extends MainPageObject{
         super(driver);
     }
 
-    public void openFolderByName(String name_of_folder)
-    {
+    public void openFolderByName(String name_of_folder) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(2);
         String folder_name_xpath = getFolderXpathByName(name_of_folder);
         this.waitForElementAndClick(By.xpath(folder_name_xpath),
                 "Cannot find folder by name" + name_of_folder,
@@ -46,10 +48,10 @@ public class MyListPageObject extends MainPageObject{
         this.waitForElementNotPresent(By.xpath(article_xpath), "Save article still present with title " + article_title, 15);
     }
 
-    public void swipeByArticleToDelete(String article_title)
-    {
+    public void swipeByArticleToDelete(String article_title) throws InterruptedException {
         this.waitForArticleToAppearByTitle(article_title);
         String article_xpath = getFolderXpathByName(article_title);
+        //TimeUnit.SECONDS.sleep(2);
         this.swipeElementToLeft(
                 By.xpath(article_xpath),
                 "Cannot find saved article");
